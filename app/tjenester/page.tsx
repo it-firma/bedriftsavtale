@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import {services} from '@/lib/site';
+import {serviceIcons,ArrowRight} from '@/components/Icons';
+export const metadata={title:'Avtaler vi hjelper bedriften med',description:'Mobil, strøm, forsikring, regnskap, internett, bedriftstelefoni, programvare og kjørebok. Se hva vi vurderer i avtalene.',alternates:{canonical:'/tjenester'}};
+export default function Services(){return <div className="container"><section className="page-intro"><span className="eyebrow">Bedriftens faste avtaler</span><h1>Riktig avtale.<br/>På flere områder.</h1><p>Velg hvilke avtaler du vil at vi skal se på. Du kan starte med én eller få oversikt over flere samtidig.</p></section><section className="page-content service-page-grid">{services.map(s=>{const Icon=serviceIcons[s.slug];return <Link className="service-page-card" key={s.slug} href={`/tjenester/${s.slug}`}><Icon size={40} strokeWidth={1.8}/><h2>{s.name}</h2><p>{s.short}</p><span className="text-link">Dette vurderer vi <ArrowRight size={18}/></span></Link>})}</section></div>}

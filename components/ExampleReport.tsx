@@ -1,0 +1,14 @@
+'use client';
+import {useState} from 'react';
+const agreements=[
+ {name:'Mobil',current:2100,offer:1600,note:'Samme datamengde og mobilnett. Bindingstid og tillegg vurderes.'},
+ {name:'Strøm',current:2200,offer:2000,note:'Sammenlignbart forbruk. Energiprisen kan variere.'},
+ {name:'Forsikring',current:2700,offer:2400,note:'Tilsvarende dekning og egenandel må bekreftes i tilbudet.'},
+ {name:'Regnskap',current:5000,offer:4500,note:'Samme omfang av regnskapsføring, lønn og årsoppgjør.'},
+ {name:'Internett',current:1000,offer:800,note:'Samme hastighet. Tilgjengelighet må bekreftes på adressen.'},
+ {name:'Bedriftstelefoni',current:700,offer:550,note:'Samme sentralbordfunksjoner og antall brukere.'},
+ {name:'Programvare',current:1500,offer:1500,note:'Behold dagens avtale. Alternativet mangler en nødvendig funksjon.'},
+ {name:'Kjørebok',current:450,offer:300,note:'Tilsvarende rapporter og utstyr for bedriftens kjøretøy.'}
+];
+const currency=(n:number)=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:0}).format(n)+' kr';
+export default function ExampleReport(){const [selected,setSelected]=useState(agreements.map(a=>a.current>a.offer));const current=agreements.reduce((sum,a)=>sum+a.current,0);const saving=agreements.reduce((sum,a,i)=>sum+(selected[i]?a.current-a.offer:0),0);return <div className="comparison"><div className="table-scroll" tabIndex={0} role="region" aria-label="Eksempelrapport med valg av avtaler"><table><caption className="fine-print" style={{textAlign:'left',paddingBottom:14}}>Illustrativt eksempel for en bedrift med 5 ansatte. Alle beløp ekskl. mva., per måned.</caption><thead><tr><th scope="col">Avtale</th><th scope="col">Dagens kostnad</th><th scope="col">Alternativ</th><th scope="col">Ditt valg</th></tr></thead><tbody>{agreements.map((a,i)=><tr key={a.name}><th scope="row">{a.name}<small>{a.note}</small></th><td>{currency(a.current)}</td><td>{currency(a.offer)}</td><td><label><input type="checkbox" checked={selected[i]} disabled={a.current===a.offer} aria-label={`Velg alternativ for ${a.name}`} onChange={()=>setSelected(p=>p.map((v,j)=>j===i?!v:v))}/>{a.current===a.offer?'Behold dagens':selected[i]?'Velg alternativ':'Behold dagens'}</label></td></tr>)}</tbody></table></div><div className="report-summary" aria-live="polite" aria-atomic="true"><div><p>Ny samlet månedskostnad med dine valg</p><strong>{currency(current-saving)}</strong><p>Dagens samlede kostnad: {currency(current)} per måned.</p></div><div className="report-total"><span>Mulig årlig besparelse med dine valg</span><strong>{currency(saving*12)}</strong><span>{currency(saving)} per måned</span></div></div><p className="fine-print">Dette er et konstruert regneeksempel, ikke innhentede tilbud. Beløpene illustrerer sammenlignbare løpende kostnader. Engangsgebyrer, oppsigelseskostnader og endrede behov må regnes inn i en reell anbefaling. Valgene her sender ingen bestilling.</p></div>}

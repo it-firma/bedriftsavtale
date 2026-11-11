@@ -1,0 +1,22 @@
+import {writeFileSync,mkdirSync} from 'node:fs';
+const icons=[
+ {slug:'mobilabonnement',label:'Mobil',body:'<rect x="14" y="4" width="20" height="40" rx="3.5"/><path d="M22 8h4"/><circle cx="24" cy="39" r="1" fill="currentColor" stroke="none"/>'},
+ {slug:'strom',label:'Strøm',body:'<path d="M28 3 11 26h13l-4 19 18-25H25l3-17Z"/>'},
+ {slug:'forsikring',label:'Forsikring',body:'<path d="M24 5c-5 4-11 5-17 5v12c0 10 7 18 17 22 10-4 17-12 17-22V10c-6 0-12-1-17-5Z"/>'},
+ {slug:'regnskap',label:'Regnskap',body:'<ellipse cx="31" cy="11" rx="12" ry="5"/><path d="M19 11v7c0 2.8 5.4 5 12 5s12-2.2 12-5v-7M27 30h4c6.6 0 12-2.2 12-5v-7M31 37c6.6 0 12-2.2 12-5v-7"/><ellipse cx="16" cy="26" rx="12" ry="5"/><path d="M4 26v7c0 2.8 5.4 5 12 5s12-2.2 12-5v-7M4 33v7c0 2.8 5.4 5 12 5s12-2.2 12-5v-7"/>'},
+ {slug:'bredband',label:'Internett',body:'<path d="M4 17c11.5-10 28.5-10 40 0M10 24c8-7 20-7 28 0M17 31c4-3.5 10-3.5 14 0"/><circle cx="24" cy="39" r="1.6" fill="currentColor" stroke="none"/>'},
+ {slug:'bedriftstelefoni',label:'Bedriftstelefoni',body:'<path d="M12 5H9a5 5 0 0 0-5 5c0 18.8 15.2 34 34 34a5 5 0 0 0 5-5v-3a3 3 0 0 0-2-2.8l-7-2.4a3 3 0 0 0-3.2.8l-3 3A29 29 0 0 1 13.4 20l3-3a3 3 0 0 0 .8-3.2l-2.4-6.9A3 3 0 0 0 12 5Z"/>'},
+ {slug:'programvare',label:'Programvare',body:'<rect x="6" y="8" width="36" height="27" rx="2"/><path d="M3 39h42l-2 4H5l-2-4ZM20 39h8"/>'},
+ {slug:'kjorebok',label:'Kjørebok',body:'<path d="m9 21 5-13h20l5 13M8 21h32a3 3 0 0 1 3 3v14H5V24a3 3 0 0 1 3-3Z"/><path d="M8 38v5h6v-5m20 0v5h6v-5M11 28h5m16 0h5M19 35h10"/>'}
+];
+mkdirSync('public/icons',{recursive:true});mkdirSync('design',{recursive:true});
+const attrs='fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+for(const i of icons)writeFileSync(`public/icons/${i.slug}.svg`,`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#003c25" ${attrs} role="img" aria-label="${i.label}"><title>${i.label}</title>${i.body}</svg>\n`);
+const reactBody=s=>s.replaceAll('stroke-dasharray','strokeDasharray');
+const react=`import type {SVGProps} from 'react';\nexport type ProductIconProps=SVGProps<SVGSVGElement>&{size?:number;strokeWidth?:number};\nconst paths:Record<string,React.ReactNode>={\n${icons.map(i=>` '${i.slug}':<>${reactBody(i.body)}</>`).join(',\n')}\n};\nexport function ProductIcon({slug,size=24,strokeWidth=1.8,...props}:ProductIconProps&{slug:string}){return <svg width={size} height={size} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{paths[slug]}</svg>}\nexport const productIcons=Object.fromEntries(Object.keys(paths).map(slug=>[slug,(props:ProductIconProps)=><ProductIcon slug={slug} {...props}/>])) as Record<string,(props:ProductIconProps)=>React.JSX.Element>;\n`;
+writeFileSync('components/ProductIcons.tsx',react);
+let sheet=`<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900"><rect width="1440" height="900" fill="#f2f6f2"/><text x="75" y="86" font-family="DejaVu Sans" font-size="16" font-weight="bold" letter-spacing="3" fill="#26784a">BEDRIFTSAVTALE.NO</text><text x="75" y="148" font-family="DejaVu Sans" font-size="42" font-weight="bold" fill="#003c25">Ett uttrykk. Åtte avtaleområder.</text><text x="75" y="188" font-family="DejaVu Sans" font-size="19" fill="#526b5b">Tilpasset motivene i den godkjente mockupen</text>`;
+icons.forEach((icon,n)=>{const x=75+(n%4)*328,y=240+Math.floor(n/4)*260;sheet+=`<rect x="${x}" y="${y}" width="306" height="235" rx="16" fill="white"/><g transform="translate(${x+111},${y+37}) scale(1.75)" color="#003c25" ${attrs}>${icon.body}</g><text x="${x+153}" y="${y+171}" text-anchor="middle" font-family="DejaVu Sans" font-size="${n===5?21:23}" font-weight="bold" fill="#003c25">${icon.label}</text><text x="${x+153}" y="${y+203}" text-anchor="middle" font-family="DejaVu Sans" font-size="13" fill="#66806f">${String(n+1).padStart(2,'0')} / SVG</text>`});
+sheet+='<rect x="0" y="818" width="1440" height="82" fill="#003c25"/><circle cx="90" cy="859" r="10" fill="#65e998"/><text x="115" y="866" font-family="DejaVu Sans" font-size="18" fill="#c4f4d0">Skarpt i alle størrelser</text><text x="1365" y="866" text-anchor="end" font-family="DejaVu Sans" font-size="15" fill="white">48 × 48 / samme linjer / transparent bakgrunn</text></svg>';
+writeFileSync('design/produktikoner.svg',sheet);
+console.log('Generated eight SVG icons, React components and presentation sheet.');
