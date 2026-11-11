@@ -46,3 +46,4 @@ export async function POST(request:Request){
    error: `Forespørselen kunne ikke sendes. Referanse: ${reference}. Send gjerne e-post til ${contact.email}.`
   }, { status: 502 });
  }
+}
