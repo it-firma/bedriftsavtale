@@ -25,5 +25,24 @@ export async function POST(request:Request){
  try{
   await sendContactMail({replyTo:email,subject:`${type==='partner'?'Partnerforespørsel':'Avtalegjennomgang'}: ${company}`,text:Object.entries(rows).map(([label,value])=>`${label}: ${value}`).join('\n\n'),html:`<h2>Ny henvendelse fra Bedriftsavtale.no</h2><table>${Object.entries(rows).map(([label,value])=>`<tr><th style="text-align:left;padding:8px">${escaped(label)}</th><td style="padding:8px;white-space:pre-wrap">${escaped(value)}</td></tr>`).join('')}</table>`});
   return NextResponse.json({ok:true});
- }catch{return NextResponse.json({error:`Forespørselen kunne ikke sendes nå. Prøv igjen senere, eller skriv til ${contact.email}.`},{status:502})}
-}
+  } catch (error) {
+  const failure = error as {
+   code?: string;
+   responseCode?: number;
+  };
+
+  const reference =
+   failure.code === 'EAUTH' || failure.responseCode === 535
+    ? 'SMTP_AUTH'
+    : ['ETIMEDOUT', 'ECONNECTION', 'ECONNREFUSED', 'ECONNRESET', 'ESOCKET'].includes(failure.code || '')
+    ? 'SMTP_CONNECTION'
+    : ['ENOTFOUND', 'EDNS', 'EAI_AGAIN'].includes(failure.code || '')
+    ? 'SMTP_DNS'
+    : 'SMTP_ERROR';
+
+  console.error('contact_smtp_failed', { reference });
+
+  return NextResponse.json({
+   error: `Forespørselen kunne ikke sendes. Referanse: ${reference}. Send gjerne e-post til ${contact.email}.`
+  }, { status: 502 });
+ }
