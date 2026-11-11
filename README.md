@@ -6,7 +6,7 @@ En komplett Next.js-nettside basert på den godkjente grønne mockupen. Skoggrø
 
 1. Pakk ut ZIP-filen. Opprett et GitHub-repository og last opp **innholdet** i prosjektmappen. `package.json`, `app`, `components`, `lib` og `public` skal ligge i roten.
 2. Importer repositoryet i Vercel. Velg **Next.js** som framework. Root Directory er prosjektroten. Standard build er `npm run build`. Ikke sett Output Directory manuelt.
-3. Sett miljøvariablene fra `.env.example` i Vercel. `RESEND_API_KEY`, `CONTACT_TO_EMAIL` og `CONTACT_FROM_EMAIL` er nødvendige for e-post. Avsenderdomenet må være verifisert hos Resend. Publiser på nytt etter endring av variabler.
+3. Sett miljøvariablene fra `.env.example` i Vercel. `RESEND_API_KEY` må settes for e-post. Alle skjemaer sender til `hei@bedriftsavtale.no`, fast definert i `lib/contact.ts`. Standard avsender er `Bedriftsavtale.no <hei@bedriftsavtale.no>`; `CONTACT_FROM_EMAIL` er valgfri dersom en annen verifisert avsender skal brukes. Avsenderdomenet må være verifisert hos Resend. Publiser på nytt etter endring av variabler.
 4. Koble bedriftsavtale.no til prosjektet under Domains i Vercel og legg inn DNS-verdiene som Vercel viser.
 5. Test en ekte henvendelse og bekreft at e-posten kommer frem før markedsføring starter.
 
@@ -28,10 +28,10 @@ Node.js 22 LTS eller nyere kompatibel LTS. Kjør `npm ci`, deretter `npm run dev
 
 ## Må avklares før en offentlig lansering
 
-Design og kode er ferdige. Disse virksomhetsopplysningene var ikke levert og skal fylles inn med faktiske opplysninger:
+Design og kode er ferdige. Eier er It-Firma AS, org.nr. 833 140 892. Felles e-post er hei@bedriftsavtale.no. Følgende gjenstår før drift:
 
-- Juridisk firma, organisasjonsnummer og personvernkontakt i miljøvariabler.
-- Virksomhetens faktiske personvernrutiner, behandlingsgrunnlag, databehandlere, overføringer og lagringstid. `app/personvern/page.tsx` er tydelig merket som utkast frem til disse er avklart. Miljøvariabler alene ferdigstiller ikke teksten.
+- Resend API-nøkkel i Vercel og verifisert avsenderdomene. Mottaker, e-post og selskapsopplysninger ligger allerede i `lib/contact.ts`.
+- Virksomhetens faktiske personvernrutiner, behandlingsgrunnlag, databehandlere, overføringer og lagringstid. Personverninformasjonen må gjenspeile den faktiske driften.
 - Hvordan tjenesten får betalt, hvilke leverandører som sammenlignes og hvilke avtaler/fullmakter som brukes. FAQ lover å forklare dette, uten å finne på en provisjonsmodell.
 - Rådgiverbildet og øvrige fotografier er genererte illustrasjoner. Ingen av personene presenteres med et oppdiktet navn eller kundehistorie. Bytt portrettet med et bilde av en faktisk rådgiver når det finnes.
 - Alle beløp i eksempelrapporten er konstruerte regneeksempler, ikke reelle tilbud eller dokumenterte resultater. De er tydelig merket og må ikke brukes som kundecase.
@@ -65,3 +65,11 @@ Et skjermbilde med mockupen til venstre og den faktiske nettsiden til høyre lig
 ## Oppdatert footer
 
 Mørkegrønn footer med fire kolonner, alle åtte avtaleområder, lys logo og kundens godkjenning som trygghetsbudskap. Stilene ligger i `app/footer.css`. Kontaktopplysninger er tydelig merket som manglende. Vilkår er et utkast og må ferdigstilles før lansering.
+
+## Visning uten plassholdere
+
+Kundevendte lanseringsmerknader og tomme selskapsfelt er fjernet. Selskapsnavn, organisasjonsnummer og felles e-post hentes fra `lib/contact.ts`. Før reell lansering må kontaktintegrasjon konfigureres, og personverninformasjon og tjenestevilkår kompletteres med faktisk grunnlag, databehandlere, lagring og godtgjørelse. Ingen funksjoner er aktivert av denne tekstoppryddingen.
+
+## Felles innboks
+
+Alle kunde- og partnerforespørsler sendes til hei@bedriftsavtale.no. En eventuell eldre CONTACT_TO_EMAIL-variabel brukes ikke, slik at ingen skjemaer sendes til en annen innboks. Kundens e-post settes som Reply-To. Koden setter ikke opp postkassen eller videresending av aliaser hos e-postleverandøren.
